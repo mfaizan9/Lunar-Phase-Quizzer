@@ -48,23 +48,44 @@ one of the options below is needed:
 * **Pages runs Jekyll by default**, which can interfere with a plain static
   site. (This repo ships an empty `html5/.nojekyll` marker to disable it.)
 
-**Option A — deploy `html5/` with the included GitHub Action (recommended, no
-files to move).** This repo contains `.github/workflows/deploy-pages.yml`, which
-uploads the `html5/` folder as the Pages site root. To use it:
+**Option A — Deploy from a branch (simplest, nothing to configure in Actions).**
+The repo root already contains a redirect `index.html` (which forwards to
+`html5/index.html`) and a `.nojekyll` file, so serving the whole repo works:
 
-1. Push the repository to GitHub (default branch `main`; edit the workflow if you
-   use `master`).
-2. In the repo, go to **Settings → Pages → Build and deployment → Source** and
-   choose **GitHub Actions**.
-3. Push (or run the workflow manually from the **Actions** tab). The sim will be
-   live at `https://<user>.github.io/<repo>/`.
+1. Push the repository to GitHub.
+2. **Settings → Pages → Build and deployment → Source → Deploy from a branch**,
+   and pick your branch with the **`/ (root)`** folder. Save.
+3. Wait ~1 minute, then open `https://<user>.github.io/<repo>/` — the root page
+   redirects into the sim at `.../<repo>/html5/index.html`.
 
-**Option B — deploy from a branch.** If you prefer the "Deploy from a branch"
-setting, the served content must be at the repo root or in `/docs`. Copy the
-**contents of `html5/`** (including the `.nojekyll` file) into the repo root or a
-`docs/` folder, then set **Settings → Pages → Source** to that branch/folder.
+(This publishes the whole repo, including the decompiled source. That is
+harmless but if you want to publish *only* the sim, use Option B.)
 
-Either way, because paths are relative, no code changes are needed.
+**Option B — Deploy `html5/` only, via the included GitHub Action.** The repo
+contains `.github/workflows/deploy-pages.yml`, which uploads just the `html5/`
+folder as the Pages site root. To use it:
+
+1. Push the repository (the workflow runs on a push to `main` **or** `master`).
+2. **Settings → Pages → Build and deployment → Source → GitHub Actions**.
+3. Push, or run the workflow manually from the **Actions** tab. The sim is then
+   live directly at `https://<user>.github.io/<repo>/`.
+
+Because every path in the sim is relative, no code changes are needed for either
+option; the sim has been verified to run correctly both at a site root and under
+a `/<repo>/html5/` subpath.
+
+### If it still doesn't load, check these
+
+* **Which URL and what do you see?** A 404 at `https://<user>.github.io/<repo>/`
+  usually means Pages isn't enabled yet, or the Action hasn't finished (watch the
+  **Actions** tab), or you picked the wrong branch/folder.
+* **Blank white masthead bar** = `foundation/contents.json` didn't load. Open the
+  browser dev console (F12) → Network tab and reload; confirm `contents.json`
+  returns **200** (not 404). A 404 means the files weren't published at the
+  expected path.
+* **Give it a minute.** The first Pages build/deploy can take 30–60+ seconds.
+* Pages must be **enabled** for the repo (public repos, or a plan that includes
+  Pages for private repos).
 
 ## Layout
 
