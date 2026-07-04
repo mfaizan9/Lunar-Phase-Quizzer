@@ -33,8 +33,38 @@ open `http://localhost:8123/` (not `.../html5/index.html`).
 
 ## Production
 
-When deployed to the cloud host (served over HTTP/HTTPS) it just works; the
-`file://` limitation only affects local double-clicking.
+When deployed to any static host (served over HTTP/HTTPS) it just works; the
+`file://` limitation only affects local double-clicking. All asset references are
+**relative**, so the sim runs correctly at a site root *or* under a subpath such
+as `https://user.github.io/repo/`.
+
+## Hosting on GitHub Pages
+
+GitHub Pages works, but two of its defaults get in the way of this project, so
+one of the options below is needed:
+
+* **Pages only serves from a repo _root_ or a `/docs` folder** — not from an
+  arbitrary `html5/` subfolder.
+* **Pages runs Jekyll by default**, which can interfere with a plain static
+  site. (This repo ships an empty `html5/.nojekyll` marker to disable it.)
+
+**Option A — deploy `html5/` with the included GitHub Action (recommended, no
+files to move).** This repo contains `.github/workflows/deploy-pages.yml`, which
+uploads the `html5/` folder as the Pages site root. To use it:
+
+1. Push the repository to GitHub (default branch `main`; edit the workflow if you
+   use `master`).
+2. In the repo, go to **Settings → Pages → Build and deployment → Source** and
+   choose **GitHub Actions**.
+3. Push (or run the workflow manually from the **Actions** tab). The sim will be
+   live at `https://<user>.github.io/<repo>/`.
+
+**Option B — deploy from a branch.** If you prefer the "Deploy from a branch"
+setting, the served content must be at the repo root or in `/docs`. Copy the
+**contents of `html5/`** (including the `.nojekyll` file) into the repo root or a
+`docs/` folder, then set **Settings → Pages → Source** to that branch/folder.
+
+Either way, because paths are relative, no code changes are needed.
 
 ## Layout
 
