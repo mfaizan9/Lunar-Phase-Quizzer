@@ -1,0 +1,330 @@
+/* ==========================================================================
+   Lunar Phase Quizzer — sim-specific styles
+   Layered on top of the KL-UNL foundation (foundation/kl-unl.css); the
+   foundation files themselves are never edited. Only styles unique to this
+   sim live here.
+   ========================================================================== */
+
+:root {
+  /* A local spacing scale so panels/rows breathe consistently */
+  --lpq-gap: 0.75rem;
+  --lpq-pad: 1rem;
+  --lpq-stage-bg: #000000;          /* diagram background (matches original) */
+  --lpq-bubble-bg: var(--alert-color-g, #b3f681);
+  --lpq-bubble-fg: #14320a;         /* dark green text on light-green bubble (>=4.5:1) */
+}
+
+/* Comfortable, zoomable base type (rule 10: >=1.125rem floor) */
+body {
+  font-size: 1.125rem;
+  line-height: 1.45;
+}
+
+/* --------------------------------------------------------------------------
+   Layout: diagram (flexible, left) + sidebar (fixed, right).
+   Overrides only the grid template; the foundation's 56rem collapse to a
+   single column is preserved by re-declaring one-column at that breakpoint.
+   -------------------------------------------------------------------------- */
+.lpq-layout {
+  grid-template-columns: minmax(0, 1fr) 23rem;
+  gap: var(--lpq-gap);
+  padding: 0.5rem;
+  align-items: stretch;
+}
+
+.lpq-sidebar {
+  display: flex;
+  flex-direction: column;
+  gap: var(--lpq-gap);
+  min-width: 0;
+}
+
+/* Make the sidebar's combined height match the diagram panel: the Question
+   Chooser keeps its natural height and the Moon's Appearance panel grows to
+   fill the remainder, so the sidebar bottom aligns with the diagram bottom. */
+.lpq-sidebar > .lpq-panel:last-child {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.lpq-sidebar > .lpq-panel:last-child .lpq-panel-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.lpq-panel {
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.lpq-panel-body {
+  padding: var(--lpq-pad);
+  padding-top: 0.5rem;
+}
+
+.panel__heading {
+  font-size: 1.15rem;
+  border-bottom: 1px solid #d9d9d9;
+  color: var(--foreground-color, #1a1a1a);
+}
+
+/* --------------------------------------------------------------------------
+   Diagram panel + stage
+   -------------------------------------------------------------------------- */
+.lpq-diagram-panel {
+  display: flex;
+  flex-direction: column;
+  background: var(--lpq-stage-bg);
+}
+
+.lpq-stage {
+  position: relative;
+  width: 100%;
+  background: var(--lpq-stage-bg);
+  line-height: 0;
+}
+
+#diagram-canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1 / 1;
+  touch-action: none;   /* draggable canvas: don't scroll/zoom while dragging */
+}
+
+/* On-screen instruction text, overlaid at the bottom of the black stage */
+.lpq-instructions {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0.15rem;
+  margin: 0;
+  padding: 0 1rem;
+  text-align: center;
+  color: #ffffff;
+  font-size: clamp(0.8rem, 2.1vw, 0.95rem);
+  line-height: 1.4;
+  pointer-events: none;
+}
+
+.lpq-instr-line {
+  display: block;
+}
+
+.lpq-instr-line + .lpq-instr-line {
+  margin-top: 0.5rem;
+}
+
+/* Green question bubbles (shown when an element is hidden by the quiz mode) */
+.lpq-bubble {
+  position: absolute;
+  background: var(--lpq-bubble-bg);
+  color: var(--lpq-bubble-fg);
+  font-weight: 700;
+  border-radius: 1.25rem;
+  padding: 0.4rem 1rem;
+  line-height: 1.2;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.4);
+}
+
+.lpq-bubble--sun,
+.lpq-bubble--moon {
+  top: 3%;
+  left: 3%;
+  font-size: clamp(0.95rem, 2.6vw, 1.15rem);
+}
+
+.lpq-bubble--appearance {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  text-align: center;
+  font-size: clamp(1rem, 6vw, 1.35rem);
+  max-width: 80%;
+}
+
+/* Diagram control sliders sit on the black panel, so use light text */
+.lpq-diagram-controls {
+  color: #ffffff;
+  padding: 0.75rem 1rem 1rem;
+}
+
+.lpq-diagram-controls .control-fieldset__legend {
+  color: #ffffff;
+}
+
+/* --------------------------------------------------------------------------
+   Control rows: shared label/slider/readout grid so columns line up
+   -------------------------------------------------------------------------- */
+.lpq-control-row {
+  grid-template-columns: 8.5rem minmax(0, 1fr) 3rem;
+  align-items: center;
+  gap: 0.5rem 0.75rem;
+  margin-bottom: 0.5rem;
+}
+
+.lpq-control-row .control-row__label {
+  font-weight: 600;
+}
+
+.lpq-readout {
+  font-variant-numeric: tabular-nums;
+  text-align: right;
+  font-size: 0.95rem;
+}
+
+.lpq-hint,
+.lpq-blurb {
+  margin: 0.5rem 0 0.75rem;
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
+
+.lpq-diagram-controls .lpq-hint {
+  color: #d7d7d7;
+}
+
+/* Sliders: use the accent color for the filled track / thumb where supported */
+.lpq-slider {
+  width: 100%;
+  min-height: 2.75rem;              /* >=44px touch target */
+  accent-color: var(--button-background-color, #005a9c);
+  cursor: pointer;
+}
+
+.lpq-diagram-controls .lpq-slider {
+  accent-color: #ffd23f;            /* visible thumb on the black panel */
+}
+
+/* Hidden-answer controls: removed from view AND the a11y tree so the answer
+   is not leaked, and not focusable while hidden. */
+.lpq-control-row[hidden] {
+  display: none;
+}
+
+/* --------------------------------------------------------------------------
+   Question Chooser
+   -------------------------------------------------------------------------- */
+.lpq-chooser {
+  padding: 0.25rem 0 0.5rem;
+}
+
+.lpq-chooser .control-choice {
+  min-height: 2.5rem;
+  gap: 0.5rem;
+  font-size: 1.05rem;
+}
+
+.lpq-answer-row {
+  display: flex;
+  justify-content: center;
+  margin-top: 0.5rem;
+}
+
+.lpq-button {
+  background: var(--background-color, #fff);
+  color: var(--foreground-color, #1a1a1a);
+  border: 1px solid var(--border-color, #767676);
+  border-radius: 4px;
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.lpq-button:hover {
+  filter: brightness(0.96);
+}
+
+/* --------------------------------------------------------------------------
+   Moon's Appearance
+   -------------------------------------------------------------------------- */
+.lpq-appearance-stage {
+  position: relative;
+  width: 100%;
+  max-width: 15rem;
+  margin: 0 auto 0.75rem;
+  background: #000;
+  border-radius: 4px;
+  overflow: hidden;
+  line-height: 0;
+}
+
+#appearance-canvas {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1 / 1;
+}
+
+.lpq-phase-row {
+  grid-template-columns: 6rem minmax(0, 1fr);
+  margin-top: 0.25rem;
+}
+
+.lpq-phase-slider {
+  grid-column: 2 / 3;
+}
+
+/* The eight phase-disc tick marks under the phase slider (decorative) */
+.lpq-phase-ticks {
+  grid-column: 2 / 3;
+  display: flex;
+  justify-content: space-between;
+  padding: 0 0.35rem;
+  margin-top: -0.15rem;
+}
+
+.lpq-phase-ticks canvas {
+  width: 16px;
+  height: 16px;
+}
+
+/* --------------------------------------------------------------------------
+   Responsive: below the foundation's 56rem breakpoint, stack to one column
+   in reading order (diagram, chooser, appearance).
+   -------------------------------------------------------------------------- */
+@media (max-width: 56rem) {
+  .lpq-layout {
+    grid-template-columns: 1fr;
+  }
+
+  /* When stacked, the diagram (black box) is top priority: force it first,
+     then the Question Chooser + Moon's Appearance sidebar below it. */
+  .lpq-diagram-panel {
+    order: -1;
+  }
+
+  .lpq-sidebar {
+    width: 100%;
+    order: 0;
+  }
+
+  .lpq-control-row {
+    grid-template-columns: 7rem minmax(0, 1fr) 2.75rem;
+  }
+}
+
+@media (max-width: 30rem) {
+  .lpq-control-row {
+    grid-template-columns: 1fr;
+  }
+
+  .lpq-readout {
+    text-align: left;
+  }
+
+  .lpq-instructions {
+    position: static;
+    background: #000;
+    padding-bottom: 0.75rem;
+  }
+}
+
+/* Respect reduced-motion: the JS also honors this, but disable CSS transitions */
+@media (prefers-reduced-motion: reduce) {
+  * {
+    transition-duration: 0.001ms !important;
+  }
+}

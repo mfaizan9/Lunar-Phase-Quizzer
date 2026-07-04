@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Lunar Phase Quizzer</title>
+  <link rel="stylesheet" href="foundation/kl-unl.css" type="text/css" media="all">
+  <link rel="stylesheet" href="styles/styles.css" type="text/css" media="all">
+</head>
+<body>
+  <div class="app-shell">
+    <kl-unl-masthead sim-id="lunarphasequizzer" json-url="foundation/contents.json"></kl-unl-masthead>
+
+    <main class="app-layout lpq-layout">
+
+      <!-- ============================ DIAGRAM ============================ -->
+      <section class="panel lpq-panel lpq-diagram-panel" aria-labelledby="diagram-heading">
+        <h2 id="diagram-heading" class="sr-only">Orbital Diagram</h2>
+
+        <div class="lpq-stage">
+          <canvas id="diagram-canvas" width="560" height="560"
+                  tabindex="0"
+                  role="img"
+                  aria-label="Orbit diagram. Click the Moon or the sunlight arrows to select, then use the arrow keys to move it. Hold Shift to snap to the eight primary positions."
+                  aria-describedby="diagram-desc">
+          </canvas>
+
+          <!-- Text equivalent of the canvas, updated from state -->
+          <p id="diagram-desc" class="sr-only"></p>
+
+          <!-- Question overlays (shown only when the matching element is hidden) -->
+          <div class="lpq-bubble lpq-bubble--sun" id="sun-question" hidden>Where is the Sun?</div>
+          <div class="lpq-bubble lpq-bubble--moon" id="moon-question" hidden>Where is the Moon?</div>
+
+          <!-- On-screen instructions (real text so it zooms and is spoken) -->
+          <p class="lpq-instructions" id="diagram-instructions"></p>
+        </div>
+
+        <fieldset class="control-fieldset lpq-diagram-controls">
+          <legend class="control-fieldset__legend">Diagram Controls</legend>
+
+          <div class="control-row lpq-control-row" id="moon-control-row">
+            <label class="control-row__label" for="moon-slider">Moon position</label>
+            <input type="range" class="control-row__slider lpq-slider" id="moon-slider"
+                   min="0" max="359" step="1" value="45"
+                   aria-describedby="moon-slider-hint">
+            <span class="lpq-readout" id="moon-readout" aria-hidden="true"></span>
+          </div>
+
+          <div class="control-row lpq-control-row" id="sun-control-row">
+            <label class="control-row__label" for="sun-slider">Sunlight direction</label>
+            <input type="range" class="control-row__slider lpq-slider" id="sun-slider"
+                   min="0" max="359" step="1" value="180"
+                   aria-describedby="sun-slider-hint">
+            <span class="lpq-readout" id="sun-readout" aria-hidden="true"></span>
+          </div>
+
+          <p class="lpq-hint" id="moon-slider-hint">Angle around the orbit, measured counterclockwise from the right. Use arrow keys to move; Home and End jump to the extremes.</p>
+          <p class="sr-only" id="sun-slider-hint">Direction the sunlight travels, as an angle. Use arrow keys to change.</p>
+        </fieldset>
+      </section>
+
+      <!-- ============================ SIDEBAR ============================ -->
+      <div class="lpq-sidebar">
+
+        <!-- Question Chooser -->
+        <section class="panel lpq-panel" aria-labelledby="chooser-heading">
+          <h2 id="chooser-heading" class="panel__heading">Question Chooser</h2>
+          <div class="lpq-panel-body">
+            <p class="lpq-blurb">Choose a question to test your understanding of how the Earth-Moon-Sun geometry determines the phases of the Moon.</p>
+
+            <fieldset class="control-fieldset lpq-chooser">
+              <legend class="sr-only">Choose a question</legend>
+
+              <div class="control-choice">
+                <input type="radio" name="mode" id="mode-sun" value="hideSunlight">
+                <label for="mode-sun">Where is the Sun?</label>
+              </div>
+              <div class="control-choice">
+                <input type="radio" name="mode" id="mode-moon" value="hideMoon">
+                <label for="mode-moon">Where is the Moon?</label>
+              </div>
+              <div class="control-choice">
+                <input type="radio" name="mode" id="mode-appearance" value="hideMoonAppearance" checked>
+                <label for="mode-appearance">What is the Moon&rsquo;s phase?</label>
+              </div>
+            </fieldset>
+
+            <div class="lpq-answer-row">
+              <button type="button" class="button lpq-button" id="toggle-answer">show answer</button>
+            </div>
+          </div>
+        </section>
+
+        <!-- Moon's Appearance -->
+        <section class="panel lpq-panel" aria-labelledby="appearance-heading">
+          <h2 id="appearance-heading" class="panel__heading">Moon&rsquo;s Appearance</h2>
+          <div class="lpq-panel-body">
+            <div class="lpq-appearance-stage">
+              <canvas id="appearance-canvas" width="240" height="240"
+                      role="img" aria-describedby="appearance-desc"></canvas>
+              <p id="appearance-desc" class="sr-only"></p>
+              <div class="lpq-bubble lpq-bubble--appearance" id="appearance-question" hidden>What is the Moon&rsquo;s phase?</div>
+            </div>
+
+            <div class="control-row lpq-control-row lpq-phase-row" id="phase-control-row">
+              <label class="control-row__label" for="phase-slider">Moon phase</label>
+              <input type="range" class="control-row__slider lpq-slider lpq-phase-slider" id="phase-slider"
+                     min="0" max="359" step="1" value="0"
+                     aria-describedby="phase-slider-hint">
+              <div class="lpq-phase-ticks" id="phase-ticks" aria-hidden="true"></div>
+            </div>
+            <p class="sr-only" id="phase-slider-hint">Adjusts the Moon's phase from new moon through full moon and back. Use arrow keys.</p>
+          </div>
+        </section>
+
+      </div>
+    </main>
+  </div>
+
+  <!-- Global polite announcer for committed state changes -->
+  <div class="sr-only" aria-live="polite" id="live-region"></div>
+
+  <script src="foundation/kl-unl-masthead.js"></script>
+  <script src="foundation/kl-unl.js"></script>
+  <script src="simulation.js"></script>
+</body>
+</html>
